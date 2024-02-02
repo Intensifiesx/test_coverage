@@ -35,6 +35,45 @@ class TestAccountModel(TestCase):
         self.assertEqual(account.phone_number, data["phone_number"])
         self.assertEqual(account.disabled, data["disabled"])
         
+    def test_update(self):
+        """ Test account update """
+        data = ACCOUNT_DATA[self.rand]
+        account = Account(**data)
+        account.create()
+        account.disabled = True
+        account.update()
+        self.assertEqual(account.disabled, True)
+        
+    def test_update_no_id(self):
+        """ Test account update with no id """
+        data = ACCOUNT_DATA[self.rand]
+        account = Account(**data)
+        account.create()
+        account.id = None
+        self.assertRaises(DataValidationError, account.update)
+        
+    def test_delete(self):
+        """ Test account delete """
+        data = ACCOUNT_DATA[self.rand]
+        account = Account(**data)
+        account.create()
+        self.assertEqual(len(Account.all()), 1)
+        account.delete()
+        self.assertEqual(len(Account.all()), 0)
+        
+    def test_find(self):
+        """ Test account find """
+        data = ACCOUNT_DATA[self.rand]
+        account = Account(**data)
+        account.create()
+        result = Account.find(account.id)
+        self.assertEqual(account.id, result.id)
+        self.assertEqual(account.name, result.name)
+        self.assertEqual(account.email, result.email)
+        self.assertEqual(account.phone_number, result.phone_number)
+        self.assertEqual(account.disabled, result.disabled)
+        self.assertEqual(account.date_joined, result.date_joined)
+        
     def test_to_dict(self):
         """ Test account to dict """
         data = ACCOUNT_DATA[self.rand] # get a random account
